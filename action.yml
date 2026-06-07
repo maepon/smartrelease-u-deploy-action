@@ -1,6 +1,6 @@
 name: 'SmartRelease U Deploy'
 description: 'SmartRelease U テストサーバーへSFTPでデプロイします'
-author: 'maepon'
+author: 'Masayuki Maekawa(maepon)'
 branding:
   icon: 'upload-cloud'
   color: 'blue'
