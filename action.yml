@@ -1,0 +1,43 @@
+name: 'SmartRelease U Deploy'
+description: 'SmartRelease U テストサーバーへSFTPでデプロイします'
+author: 'maepon'
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
+
+inputs:
+  local_path:
+    description: 'アップロードするローカルパス（例: ./public/*）'
+    required: true
+  remote_path:
+    description: 'デプロイ先のリモートパス（例: /www）'
+    required: true
+  sftp_server:
+    required: false
+    default: 'sftp.pre-svr.jp'
+  sftp_username:
+    required: true
+  sftp_private_key:
+    required: true
+  sftp_port:
+    required: false
+    default: '22'
+  size_only:
+    description: 'ファイルサイズのみで比較してアップロードするかどうか（true/false）'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: wlixcc/SFTP-Deploy-Action@5cae30355c872f284b98e1da3e1cc6b8b8e8243e # v1.2.6
+      with:
+        server: ${{ inputs.sftp_server }}
+        username: ${{ inputs.sftp_username }}
+        ssh_private_key: ${{ inputs.sftp_private_key }}
+        port: ${{ inputs.sftp_port }}
+        local_path: ${{ inputs.local_path }}
+        remote_path: ${{ inputs.remote_path }}
+        sftp_only: true   # SmartRelease U はSFTPのみ許可のため固定
+        args: "-o ConnectTimeout=5${{ inputs.size_only == 'true' && ' --size-only' || '' }}"
+

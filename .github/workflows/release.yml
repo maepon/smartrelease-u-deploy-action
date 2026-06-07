@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          persist-credentials: false
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@b1b432f13acb7768e0c8efdec416d363a57546f2 # v4.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update major version tag
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          MAJOR_VERSION="v${{ steps.semantic.outputs.new_release_major_version }}"
+          VERSION="v${{ steps.semantic.outputs.new_release_version }}"
+          
+          # Setup git config
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Use GITHUB_TOKEN to authentication for push
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+          # Force update major tag and push
+          git tag -fa "$MAJOR_VERSION" -m "Update $MAJOR_VERSION tag to $VERSION"
+          git push origin "$MAJOR_VERSION" --force
+        shell: bash
