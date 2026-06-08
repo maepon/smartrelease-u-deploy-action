@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # GitHub Actions のアップデートを監視
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly" # 毎週チェック（daily / monthly も選択可能）
+    open-pull-requests-limit: 10
